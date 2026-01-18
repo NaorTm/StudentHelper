@@ -1,0 +1,408 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Student Rights Copilot</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;600;700&family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ink: #101114;
+      --paper: #f2efe8;
+      --sun: #f4c453;
+      --clay: #cc6b3d;
+      --sea: #2e6f95;
+      --moss: #2f4b3c;
+      --card: #fffaf1;
+      --stroke: #ded8cc;
+      --shadow: rgba(0, 0, 0, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Space Grotesk", sans-serif;
+      color: var(--ink);
+      background: radial-gradient(circle at 20% 20%, #f7e9d1, transparent 45%),
+        radial-gradient(circle at 80% 20%, #f7d7b8, transparent 40%),
+        linear-gradient(120deg, #f2efe8, #f0e5d8 55%, #efe0d0);
+      min-height: 100vh;
+    }
+
+    header {
+      padding: 32px 24px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .title {
+      font-family: "Fraunces", serif;
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      letter-spacing: -0.03em;
+    }
+
+    .subtitle {
+      max-width: 720px;
+      font-size: 1rem;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(280px, 1.1fr) minmax(280px, 0.9fr);
+      gap: 24px;
+      padding: 16px 24px 32px;
+    }
+
+    .panel {
+      background: var(--card);
+      border: 1px solid var(--stroke);
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 10px 30px var(--shadow);
+      position: relative;
+      overflow: hidden;
+      animation: rise 0.6s ease;
+    }
+
+    .panel::after {
+      content: "";
+      position: absolute;
+      inset: auto -20% -60% auto;
+      width: 220px;
+      height: 220px;
+      background: radial-gradient(circle, rgba(244, 196, 83, 0.3), transparent 70%);
+    }
+
+    h2 {
+      font-family: "Fraunces", serif;
+      font-size: 1.4rem;
+      margin: 0 0 12px;
+    }
+
+    label {
+      display: block;
+      margin: 12px 0 6px;
+      font-weight: 600;
+    }
+
+    input, textarea, select {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--stroke);
+      border-radius: 10px;
+      font-family: inherit;
+      background: #fff;
+    }
+
+    button {
+      margin-top: 12px;
+      padding: 10px 16px;
+      border-radius: 10px;
+      border: none;
+      background: var(--ink);
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+    }
+
+    .chat-log {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 16px;
+      max-height: 280px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+
+    .bubble {
+      padding: 12px 14px;
+      border-radius: 12px;
+      background: #fff;
+      border: 1px solid var(--stroke);
+      white-space: pre-wrap;
+    }
+
+    .bubble.user {
+      background: #fff5e1;
+      border-color: #f2d6a4;
+    }
+
+    .bubble.assistant {
+      background: #eef5ff;
+      border-color: #c8daef;
+    }
+
+    .meta {
+      font-size: 0.85rem;
+      color: #5a5a5a;
+    }
+
+    .citation-list {
+      margin-top: 12px;
+      background: #f8f4ea;
+      border-radius: 10px;
+      padding: 10px 12px;
+      border: 1px dashed #dacbb3;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+
+    .citation-item {
+      font-size: 0.85rem;
+      margin-bottom: 8px;
+    }
+
+    .pill {
+      display: inline-flex;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: #1f2a44;
+      color: white;
+      font-size: 0.8rem;
+      margin-right: 8px;
+    }
+
+    .split {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .status {
+      background: #fff;
+      border: 1px solid var(--stroke);
+      border-radius: 10px;
+      padding: 12px;
+      min-height: 80px;
+      white-space: pre-wrap;
+      font-size: 0.9rem;
+    }
+
+    .explain-box {
+      background: #f8f4ea;
+      border: 1px dashed #dacbb3;
+      border-radius: 10px;
+      padding: 10px 12px;
+      max-height: 220px;
+      overflow-y: auto;
+      font-size: 0.85rem;
+    }
+
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 900px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+      .split {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="title">Student Rights Copilot</div>
+    <div class="subtitle">
+      Document-grounded assistant with strict citations. Upload approved policies, ask questions,
+      and see every claim backed by the corpus.
+    </div>
+  </header>
+
+  <div class="layout">
+    <section class="panel" aria-label="Student chat">
+      <h2>Student Chat</h2>
+      <label for="apiBase">API Base URL</label>
+      <input id="apiBase" value="http://localhost:8000" />
+      <div class="split">
+        <div>
+          <label for="question">Question</label>
+          <textarea id="question" rows="4" placeholder="Ask about leave policies, accommodations, benefits..."></textarea>
+        </div>
+        <div>
+          <label for="institution">Institution filter (optional)</label>
+          <input id="institution" placeholder="Institution name" />
+          <label for="language">Language filter (optional)</label>
+          <input id="language" placeholder="en" />
+        </div>
+      </div>
+      <button id="ask">Ask with citations</button>
+      <div class="chat-log" id="chatLog"></div>
+      <div class="citation-list" id="citations"></div>
+    </section>
+
+    <section class="panel" aria-label="Admin upload">
+      <h2>Admin Upload</h2>
+      <label for="adminToken">Admin Token</label>
+      <input id="adminToken" type="password" placeholder="ADMIN_TOKEN" />
+      <label for="title">Document Title</label>
+      <input id="title" placeholder="Policy title" />
+      <label for="versionLabel">Version Label</label>
+      <input id="versionLabel" placeholder="2024-09" />
+      <label for="file">PDF File</label>
+      <input id="file" type="file" />
+      <button id="upload">Upload and ingest</button>
+      <div class="status" id="uploadStatus"></div>
+      <div class="meta">Uploads create a document version and enqueue ingestion.</div>
+
+      <h2 style="margin-top: 20px;">Explain View</h2>
+      <label for="conversationId">Conversation ID</label>
+      <input id="conversationId" placeholder="Paste conversation id" />
+      <button id="loadExplain">Load explain trace</button>
+      <div class="explain-box" id="explainBox"></div>
+    </section>
+  </div>
+
+  <script>
+    async function postJson(url, payload) {
+      const res = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+      if (!res.ok) {
+        throw new Error(await res.text());
+      }
+      return res.json();
+    }
+
+    async function getJson(url, token) {
+      const res = await fetch(url, {
+        headers: token ? { "X-Admin-Token": token } : undefined
+      });
+      if (!res.ok) {
+        throw new Error(await res.text());
+      }
+      return res.json();
+    }
+
+    function renderChatItem(role, content) {
+      const div = document.createElement("div");
+      div.className = `bubble ${role}`;
+      div.textContent = content;
+      return div;
+    }
+
+    document.getElementById("ask").addEventListener("click", async () => {
+      const apiBase = document.getElementById("apiBase").value.trim();
+      const question = document.getElementById("question").value.trim();
+      const institution = document.getElementById("institution").value.trim();
+      const language = document.getElementById("language").value.trim();
+      const chatLog = document.getElementById("chatLog");
+      const citationsEl = document.getElementById("citations");
+
+      if (!question) {
+        return;
+      }
+
+      chatLog.appendChild(renderChatItem("user", question));
+      citationsEl.textContent = "";
+
+      try {
+        const conversation = await postJson(`${apiBase}/chat/conversations`, {});
+        const response = await postJson(`${apiBase}/chat/conversations/${conversation.id}/messages`, {
+          content: question,
+          institution: institution || null,
+          language: language || null
+        });
+
+        chatLog.appendChild(renderChatItem("assistant", response.answer_text));
+        if (response.citations && response.citations.length) {
+          citationsEl.innerHTML = response.citations.map(cite => (
+            `<div class="citation-item">
+              <span class="pill">${cite.document_title}</span>
+              v${cite.document_version_label} p.${cite.pages.start}-${cite.pages.end}<br/>
+              ${cite.excerpt}
+            </div>`
+          )).join("");
+        } else {
+          citationsEl.textContent = "No citations returned.";
+        }
+      } catch (err) {
+        chatLog.appendChild(renderChatItem("assistant", `Error: ${err.message || err}`));
+      }
+    });
+
+    document.getElementById("upload").addEventListener("click", async () => {
+      const apiBase = document.getElementById("apiBase").value.trim();
+      const token = document.getElementById("adminToken").value.trim();
+      const title = document.getElementById("title").value.trim();
+      const versionLabel = document.getElementById("versionLabel").value.trim();
+      const fileInput = document.getElementById("file");
+      const statusEl = document.getElementById("uploadStatus");
+      statusEl.textContent = "";
+
+      if (!fileInput.files.length) {
+        statusEl.textContent = "Select a PDF file.";
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append("title", title || "Untitled");
+      formData.append("version_label", versionLabel || "v1");
+      formData.append("file", fileInput.files[0]);
+
+      try {
+        const res = await fetch(`${apiBase}/admin/documents`, {
+          method: "POST",
+          headers: { "X-Admin-Token": token },
+          body: formData
+        });
+        if (!res.ok) {
+          throw new Error(await res.text());
+        }
+        const json = await res.json();
+        statusEl.textContent = JSON.stringify(json, null, 2);
+      } catch (err) {
+        statusEl.textContent = `Error: ${err.message || err}`;
+      }
+    });
+
+    document.getElementById("loadExplain").addEventListener("click", async () => {
+      const apiBase = document.getElementById("apiBase").value.trim();
+      const token = document.getElementById("adminToken").value.trim();
+      const conversationId = document.getElementById("conversationId").value.trim();
+      const explainBox = document.getElementById("explainBox");
+      explainBox.textContent = "";
+
+      if (!conversationId) {
+        explainBox.textContent = "Enter a conversation id.";
+        return;
+      }
+
+      try {
+        const data = await getJson(`${apiBase}/admin/explain/conversations/${conversationId}`, token);
+        if (!data.chunks || !data.chunks.length) {
+          explainBox.textContent = "No retrieval trace found.";
+          return;
+        }
+        explainBox.innerHTML = data.chunks.map((chunk) => (
+          `<div class="citation-item">
+            <span class="pill">${chunk.document_title}</span>
+            ${chunk.version_label} p.${chunk.page_start}-${chunk.page_end}<br/>
+            score: ${chunk.similarity_score?.toFixed(3) ?? "n/a"}
+            ${chunk.rerank_score ? `, rerank: ${chunk.rerank_score.toFixed(3)}` : ""}<br/>
+            ${chunk.excerpt}
+          </div>`
+        )).join("");
+      } catch (err) {
+        explainBox.textContent = `Error: ${err.message || err}`;
+      }
+    });
+  </script>
+</body>
+</html>
